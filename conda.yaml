@@ -1,0 +1,22 @@
+name: cs412-project
+channels:
+  # - glemaitre
+  - akode
+  - conda-forge
+  - defaults
+dependencies:
+  - gym
+  - ipykernel
+  - jupyter
+  - jupyter_contrib_nbextensions
+  - matplotlib
+  - numpy=1.15.4
+  - pandas=0.25.1
+  - python=3.6.8
+  - seaborn
+  - scikit-learn>=0.20.3
+  - tabulate
+  - tqdm
+  - pip
+  - pip:
+    - file:envs/multiagent-particle-envs
