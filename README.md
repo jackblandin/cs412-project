@@ -20,4 +20,7 @@ python3.6 -m ipykernel install --user --name cs412-project --display-name "cs412
 
 ## Run multi-agent-particle-envs openai gym environment
 ```sh
+cd envs/multiagent-particle-envs
+bin/interactive.py --scenario simple.py
 ```
+You can move the red agent with the arrow keys.
