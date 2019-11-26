@@ -1,11 +1,15 @@
 #!/usr/bin/env python
+import time
 import os,sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import argparse
 
+import numpy as np
+
 from multiagent.environment import MultiAgentEnv
 from multiagent.policy import InteractivePolicy
 import multiagent.scenarios as scenarios
+
 
 if __name__ == '__main__':
     # parse arguments
@@ -25,6 +29,11 @@ if __name__ == '__main__':
     policies = [InteractivePolicy(env,i) for i in range(env.n)]
     # execution loop
     obs_n = env.reset()
+
+    rewards = np.zeros(len(env.world.agents))
+
+    print ('env.discrete_action_space:', env.discrete_action_space)
+
     while True:
         # query for action from each agent's policy
         act_n = []
@@ -35,5 +44,13 @@ if __name__ == '__main__':
         # render all agent views
         env.render()
         # display rewards
-        #for agent in env.world.agents:
-        #    print(agent.name + " reward: %0.3f" % env._get_reward(agent))
+
+        new_rewards = np.zeros(len(env.world.agents))
+        for i, agent in enumerate(env.world.agents):
+            new_rewards[i] = env._get_reward(agent)
+        if (np.abs(rewards - new_rewards) > .001).any():
+            print(rewards - new_rewards)
+            rewards = new_rewards
+            for i, r in enumerate(rewards):
+                print('agent {} reward: {:.3f}'.format(i, r))
+

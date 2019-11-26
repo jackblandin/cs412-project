@@ -19,4 +19,4 @@ dependencies:
   - tqdm
   - pip
   - pip:
-    - file:envs/multiagent-particle-envs
+    - file:envs/multiagent_particle_envs

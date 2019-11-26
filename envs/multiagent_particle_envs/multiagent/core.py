@@ -26,7 +26,7 @@ class Action(object):
 # properties and state of physical world entity
 class Entity(object):
     def __init__(self):
-        # name 
+        # name
         self.name = ''
         # properties:
         self.size = 0.050
@@ -91,7 +91,7 @@ class World(object):
         # color dimensionality
         self.dim_color = 3
         # simulation timestep
-        self.dt = 0.1
+        self.dt = 0.05
         # physical damping
         self.damping = 0.25
         # contact response parameters
@@ -115,7 +115,7 @@ class World(object):
 
     # update state of the world
     def step(self):
-        # set actions for scripted agents 
+        # set actions for scripted agents
         for agent in self.scripted_agents:
             agent.action = agent.action_callback(agent, self)
         # gather forces applied to entities
@@ -136,7 +136,7 @@ class World(object):
         for i,agent in enumerate(self.agents):
             if agent.movable:
                 noise = np.random.randn(*agent.action.u.shape) * agent.u_noise if agent.u_noise else 0.0
-                p_force[i] = agent.action.u + noise                
+                p_force[i] = agent.action.u + noise
         return p_force
 
     # gather physical forces acting on entities
@@ -148,14 +148,30 @@ class World(object):
                 [f_a, f_b] = self.get_collision_force(entity_a, entity_b)
                 if(f_a is not None):
                     if(p_force[a] is None): p_force[a] = 0.0
-                    p_force[a] = f_a + p_force[a] 
+                    p_force[a] = f_a + p_force[a]
                 if(f_b is not None):
                     if(p_force[b] is None): p_force[b] = 0.0
-                    p_force[b] = f_b + p_force[b]        
+                    p_force[b] = f_b + p_force[b]
         return p_force
 
     # integrate physical state
     def integrate_state(self, p_force):
+        """For each movable entity (agent or landmark):
+            1 Adjusts physical velocity (p_vel) based on the
+                1. Forces due to actions from agents.
+                2. Environment (collision) forces.
+            2. Adjusts agent's physical position (p_pos) based on its velocity
+               and the step time-delta (world.dt).
+
+        Parameters
+        ----------
+        p_force : list, length (len(self.entities))
+            Physical forces on each entity.
+
+        Returns
+        -------
+        None
+        """
         for i,entity in enumerate(self.entities):
             if not entity.movable: continue
             entity.state.p_vel = entity.state.p_vel * (1 - self.damping)
@@ -169,12 +185,23 @@ class World(object):
             entity.state.p_pos += entity.state.p_vel * self.dt
 
     def update_agent_state(self, agent):
+        """Adds noise to agent's attempt at communication. Updates it's state.c
+
+        Parameters
+        ----------
+        agent : Agent
+            Agent to update.
+
+        Returns
+        -------
+        None
+        """
         # set communication state (directly for now)
         if agent.silent:
             agent.state.c = np.zeros(self.dim_c)
         else:
             noise = np.random.randn(*agent.action.c.shape) * agent.c_noise if agent.c_noise else 0.0
-            agent.state.c = agent.action.c + noise      
+            agent.state.c = agent.action.c + noise
 
     # get collision forces for any contact between two entities
     def get_collision_force(self, entity_a, entity_b):

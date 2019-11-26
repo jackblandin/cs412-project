@@ -18,7 +18,7 @@ python3.6 -m ipykernel install --user --name cs412-project --display-name "cs412
 ```
 
 
-## Run multi-agent-particle-envs openai gym environment
+## Run interactive multi-agent-particle-envs openai gym environment
 ```sh
 cd envs/multiagent-particle-envs
 bin/interactive.py --scenario simple.py

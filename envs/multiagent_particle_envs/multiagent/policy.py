@@ -1,5 +1,6 @@
 import numpy as np
 from pyglet.window import key
+from tabulate import tabulate
 
 # individual agent policy
 class Policy(object):
@@ -37,7 +38,10 @@ class InteractivePolicy(Policy):
             if self.move[2]: u[4] += 1.0
             if True not in self.move:
                 u[0] += 1.0
-        return np.concatenate([u, np.zeros(self.env.world.dim_c)])
+        headers = ['no_dir_move', 'move_dir_1', 'move_dir_2', 'move_dir_3', 'move_dir_4', 'comm_1', 'comm_2']
+        action = np.concatenate([u, np.zeros(self.env.world.dim_c)])
+        # print(tabulate(action, headers=headers))
+        return action
 
     # keyboard event callbacks
     def key_press(self, k, mod):
